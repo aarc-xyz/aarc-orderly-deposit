@@ -1,84 +1,47 @@
+import { ethers } from "ethers";
+import { TokenConfig } from "./types";
+
 export enum SupportedChainId {
-    BASE = 8453
+    ARBITRUM = 42161
 }
 
 export type AddressMap = {
     [chainId: number]: string;
 };
 
-export const DIAMOND_ADDRESS: AddressMap = {
-    [SupportedChainId.BASE]: '0x91Cf2D8Ed503EC52768999aA6D8DBeA6e52dbe43'
+export const APEX_OMNI_ADDRESS: AddressMap = {
+    [SupportedChainId.ARBITRUM]: '0x3169844a120C0f517B4eB4A750c08d8518C8466a'
 };
 
-export const MULTIACCOUNT_ADDRESS: AddressMap = {
-    [SupportedChainId.BASE]: '0x8Ab178C07184ffD44F0ADfF4eA2ce6cFc33F3b86'
-};
-
-export const multiAccountAbi = [
+export const TOKENS: TokenConfig[] = [
     {
-        name: "getAccountsLength",
-        type: "function",
-        stateMutability: "view",
-        inputs: [
-            {
-                name: "user",
-                type: "address"
-            }
-        ],
-        outputs: [
-            {
-                name: "",
-                type: "uint256"
-            }
-        ]
+        symbol: 'USDC',
+        address: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
+        decimals: 6,
+        logo: '/usdc-icon.svg',
+        quickAmounts: ['1', '5', '10', '20']
     },
     {
-        name: "getAccounts",
-        type: "function",
-        stateMutability: "view",
-        inputs: [
-            {
-                name: "user",
-                type: "address"
-            },
-            {
-                name: "start",
-                type: "uint256"
-            },
-            {
-                name: "size",
-                type: "uint256"
-            }
-        ],
-        outputs: [
-            {
-                name: "",
-                type: "tuple[]",
-                components: [
-                    {
-                        name: "accountAddress",
-                        type: "address"
-                    },
-                    {
-                        name: "name",
-                        type: "string"
-                    }
-                ]
-            }
-        ]
+        symbol: 'USDT',
+        address: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
+        decimals: 6,
+        logo: '/usdt-icon.svg',
+        quickAmounts: ['1', '5', '10', '20']
     },
     {
-        name: "addAccount",
-        type: "function",
-        stateMutability: "nonpayable",
-        inputs: [
-            {
-                name: "name",
-                type: "string"
-            }
-        ],
-        outputs: []
+        symbol: 'WETH',
+        address: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
+        decimals: 18,
+        logo: '/weth-icon.png',
+        quickAmounts: ['0.01', '0.05', '0.1', '0.2']
+    },
+    {
+        symbol: 'ETH',
+        address: ethers.ZeroAddress,
+        decimals: 18,
+        logo: '/eth-icon.svg',
+        quickAmounts: ['0.01', '0.05', '0.1', '0.2']
     }
-] as const;
+];
 
 export const BASE_RPC_URL = "https://mainnet.base.org";

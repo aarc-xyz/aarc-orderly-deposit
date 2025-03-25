@@ -21,8 +21,8 @@ export const Navbar = ({ handleDisconnect }: { handleDisconnect: () => void }) =
                     />
                     <img
                         className="h-12 w-auto"
-                        src="/intentx-name-logo.svg"
-                        alt="IntentX Logo"
+                        src="/apex-name-logo.svg"
+                        alt="Apex Omni Logo"
                     />
                 </div>
                 <div className="flex items-center space-x-4">
