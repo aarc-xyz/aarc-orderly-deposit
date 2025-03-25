@@ -181,6 +181,24 @@ export const ApexOmniDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitModa
                         ))}
                     </div>
 
+                    {/* Deposit Info */}
+                    <div className="w-full flex gap-x-2 items-start p-4 bg-[rgba(165,229,71,0.05)] border border-[rgba(165,229,71,0.2)] rounded-2xl">
+                        <img src="/info-icon.svg" alt="Info" className="w-4 h-4 mt-[2px]" />
+                        <div className="text-xs text-[#F6F6F6] leading-5">
+                            <p className="font-bold mb-1">After your deposit is completed:</p>
+                            <p>Check your deposit balance on{' '}
+                                <a 
+                                    href="https://omni.apex.exchange/trade/BTCUSDT" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="text-[#A5E547] hover:underline"
+                                >
+                                    Apex Omni Exchange
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+
                     {/* Continue Button */}
                     <button
                         onClick={handleDeposit}
