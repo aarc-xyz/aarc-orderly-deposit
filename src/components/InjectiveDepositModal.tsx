@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { useAccount, useDisconnect } from 'wagmi';
 import { ethers } from 'ethers';
 import { AarcFundKitModal } from '@aarc-xyz/fundkit-web-sdk';
-import { APEX_OMNI_ADDRESS, SupportedChainId, TOKENS } from '../constants';
+import { INJECTIVE_ADDRESS, SupportedChainId, TOKENS } from '../constants';
 import { Navbar } from './Navbar';
 import StyledConnectButton from './StyledConnectButton';
 import { TokenConfig } from '../types';
+import { getEthereumAddress } from '@injectivelabs/sdk-ts';
 
-export const ApexOmniDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitModal }) => {
+export const InjectiveDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitModal }) => {
     const [amount, setAmount] = useState('20');
     const [isProcessing, setIsProcessing] = useState(false);
     const [selectedToken, setSelectedToken] = useState<TokenConfig>(TOKENS[0]);
@@ -15,6 +16,7 @@ export const ApexOmniDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitModa
     const { address } = useAccount();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const shouldDisableInteraction = !address;
+    const [destinationAddress, setDestinationAddress] = useState('');
 
     const handleDisconnect = () => {
         setAmount('20');
@@ -28,59 +30,34 @@ export const ApexOmniDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitModa
         try {
             setIsProcessing(true);
 
-            const apexOmniInterface = new ethers.Interface([
-                "function depositERC20(address _token, uint104 _amount, bytes32 _zkLinkAddress, uint8 _subAccountId, bool _mapping) external",
-                "function depositETH(bytes32 _zkLinkAddress, uint8 _subAccountId) external payable"
+            const injectiveInterface = new ethers.Interface([
+                "function sendToInjective(address _tokenContract, bytes32 _destination, uint256 _amount, string _data) external"
             ]);
 
-            let contractPayload;
-            let value = '0';
-
-            if (selectedToken.symbol === 'ETH') {
-                value = ethers.parseUnits(amount, selectedToken.decimals).toString();
-                contractPayload = apexOmniInterface.encodeFunctionData("depositETH", [
-                    `0x000000000000000000000000${address.slice(2)}`,
-                    0 // subAccountId
-                ]);
-            } else {
-                const amountInWei = ethers.parseUnits(amount, selectedToken.decimals);
-                // Ensure amount fits in uint104 (2^104 - 1)
-                const maxUint104 = BigInt(2) ** BigInt(104) - BigInt(1);
-                if (BigInt(amountInWei.toString()) > maxUint104) {
-                    throw new Error("Amount too large");
-                }
-                
-                contractPayload = apexOmniInterface.encodeFunctionData("depositERC20", [
-                    selectedToken.address,
-                    amountInWei,
-                    `0x000000000000000000000000${address.slice(2)}`,
-                    0, // subAccountId
-                    false
-                ]);
+            const amountInWei = ethers.parseUnits(amount, selectedToken.decimals);
+            
+            let userEthereumAddress = destinationAddress ? destinationAddress : address;
+            if (destinationAddress && destinationAddress.toLowerCase().startsWith('inj')) {
+                userEthereumAddress = getEthereumAddress(destinationAddress);
             }
 
+            const contractPayload = injectiveInterface.encodeFunctionData("sendToInjective", [
+                selectedToken.address,
+                `0x000000000000000000000000${userEthereumAddress.slice(2)}`,
+                amountInWei,
+                ""
+            ]);
+            
             aarcModal.updateRequestedAmount(Number(amount));
             aarcModal.updateDestinationToken(selectedToken.address);
 
-            // For ETH deposits, we need to set the value
-            if (selectedToken.symbol === 'ETH') {
-                aarcModal.updateDestinationContract({
-                    contractAddress: APEX_OMNI_ADDRESS[SupportedChainId.ARBITRUM],
-                    contractName: "Apex Omni Deposit",
-                    contractGasLimit: "800000",
-                    contractPayload: contractPayload,
-                    contractLogoURI: "https://omni.apex.exchange/favicon.ico?v=1.0.2",
-                    contractAmount: value
-                });
-            } else {
-                aarcModal.updateDestinationContract({
-                    contractAddress: APEX_OMNI_ADDRESS[SupportedChainId.ARBITRUM],
-                    contractName: "Apex Omni Deposit",
-                    contractGasLimit: "800000",
-                    contractPayload: contractPayload,
-                    contractLogoURI: "https://omni.apex.exchange/favicon.ico?v=1.0.2"
-                });
-            }
+            aarcModal.updateDestinationContract({
+                contractAddress: INJECTIVE_ADDRESS[SupportedChainId.ETHEREUM],
+                contractName: "Injective Deposit",
+                contractGasLimit: "800000",
+                contractPayload: contractPayload,
+                contractLogoURI: "https://explorer.injective.network/favicon.png"
+            });
 
             aarcModal.openModal();
             setAmount('');
@@ -98,7 +75,7 @@ export const ApexOmniDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitModa
             <main className="mt-24 gradient-border flex items-center justify-center mx-auto max-w-md shadow-[4px_8px_8px_4px_rgba(0,0,0,0.1)]">
                 <div className="flex flex-col items-center w-[440px] bg-[#2D2D2D] rounded-[24px] p-8 pb-[22px] gap-3">
                     <div className="w-full relative">
-                        <h3 className="text-[14px] font-semibold text-[#F6F6F6] mb-4">Apex Omni Deposit</h3>
+                        <h3 className="text-[14px] font-semibold text-[#F6F6F6] mb-4">Injective Deposit</h3>
                         {!address && <StyledConnectButton /> }
                     </div>
 
@@ -167,7 +144,7 @@ export const ApexOmniDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitModa
                         </div>
                     </div>
 
-                    {/* Quick Amount Buttons */}
+                                        {/* Quick Amount Buttons */}
                     <div className="flex gap-[14px] w-full">
                         {selectedToken.quickAmounts.map((value) => (
                             <button
@@ -181,6 +158,33 @@ export const ApexOmniDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitModa
                         ))}
                     </div>
 
+                    {/* Destination Address Input */}
+                    <div className="w-full">
+                        <div className="flex items-center p-3 bg-[#2A2A2A] border border-[#424242] rounded-2xl">
+                            <div className="flex items-center gap-3 flex-1">
+                                <input
+                                    type="text"
+                                    value={destinationAddress}
+                                    onChange={(e) => setDestinationAddress(e.target.value)}
+                                    className="w-full bg-transparent text-[18px] font-semibold text-[#F6F6F6] outline-none"
+                                    placeholder="Enter destination address INJ or ETH"
+                                    disabled={shouldDisableInteraction}
+                                />
+                                <div className="relative group">
+                                    <img 
+                                        src="/info-icon.svg" 
+                                        alt="Info" 
+                                        className="w-4 h-4 cursor-pointer" 
+                                    />
+                                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-[#2A2A2A] border border-[#424242] rounded-lg text-xs text-[#F6F6F6] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                        You can enter INJ or ETH address where you want the funds to be deposited,
+                                        or leave blank to deposit to your own address
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     {/* Deposit Info */}
                     <div className="w-full flex gap-x-2 items-start p-4 bg-[rgba(165,229,71,0.05)] border border-[rgba(165,229,71,0.2)] rounded-2xl">
                         <img src="/info-icon.svg" alt="Info" className="w-4 h-4 mt-[2px]" />
@@ -188,12 +192,12 @@ export const ApexOmniDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitModa
                             <p className="font-bold mb-1">After your deposit is completed:</p>
                             <p>Check your deposit balance on{' '}
                                 <a 
-                                    href="https://omni.apex.exchange/trade/BTCUSDT" 
+                                    href="https://explorer.injective.network/" 
                                     target="_blank" 
                                     rel="noopener noreferrer"
                                     className="text-[#A5E547] hover:underline"
                                 >
-                                    Apex Omni Exchange
+                                    Injective Explorer
                                 </a>
                             </p>
                         </div>
@@ -224,4 +228,4 @@ export const ApexOmniDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitModa
     );
 };
 
-export default ApexOmniDepositModal;
+export default InjectiveDepositModal;

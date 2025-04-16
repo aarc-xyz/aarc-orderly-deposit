@@ -5,10 +5,10 @@ import {
   TransactionErrorData,
   SourceConnectorName,
 } from "@aarc-xyz/fundkit-web-sdk";
-import { APEX_OMNI_ADDRESS, SupportedChainId } from "../constants";
+import { INJECTIVE_ADDRESS, SupportedChainId } from "../constants";
 
 export const aarcConfig: FKConfig = {
-  appName: "Apex Omni x Aarc",
+  appName: "Injective x Aarc",
   module: {
     exchange: {
       enabled: true,
@@ -26,13 +26,14 @@ export const aarcConfig: FKConfig = {
   },
   destination: {
     contract: {
-      contractAddress: APEX_OMNI_ADDRESS[SupportedChainId.ARBITRUM],
-      contractName: "Apex Omni Deposit",
+      contractAddress: INJECTIVE_ADDRESS[SupportedChainId.ETHEREUM],
+      contractName: "Injective Deposit",
       contractPayload: "0x", // This will be updated dynamically
       contractGasLimit: "300000", // Standard gas limit, can be adjusted if needed
+      contractLogoURI: "https://explorer.injective.network/favicon.png",
     },
-    walletAddress: APEX_OMNI_ADDRESS[SupportedChainId.ARBITRUM],
-    chainId: 42161, // Base chain ID
+    walletAddress: INJECTIVE_ADDRESS[SupportedChainId.ETHEREUM],
+    chainId: 1, // Base chain ID
   },
   appearance: {
     roundness: 42,

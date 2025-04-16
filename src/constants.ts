@@ -1,47 +1,30 @@
-import { ethers } from "ethers";
 import { TokenConfig } from "./types";
 
 export enum SupportedChainId {
-    ARBITRUM = 42161
+    ETHEREUM = 1
 }
 
 export type AddressMap = {
     [chainId: number]: string;
 };
 
-export const APEX_OMNI_ADDRESS: AddressMap = {
-    [SupportedChainId.ARBITRUM]: '0x3169844a120C0f517B4eB4A750c08d8518C8466a'
+export const INJECTIVE_ADDRESS: AddressMap = {
+    [SupportedChainId.ETHEREUM]: '0xf955c57f9ea9dc8781965feae0b6a2ace2bad6f3'
 };
 
 export const TOKENS: TokenConfig[] = [
     {
-        symbol: 'USDC',
-        address: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
-        decimals: 6,
-        logo: '/usdc-icon.svg',
-        quickAmounts: ['1', '5', '10', '20']
-    },
-    {
         symbol: 'USDT',
-        address: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
+        address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
         decimals: 6,
         logo: '/usdt-icon.svg',
         quickAmounts: ['1', '5', '10', '20']
     },
     {
-        symbol: 'WETH',
-        address: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
+        symbol: 'INJ',
+        address: '0xe28b3B32B6c345A34Ff64674606124Dd5Aceca30',
         decimals: 18,
-        logo: '/weth-icon.png',
-        quickAmounts: ['0.01', '0.05', '0.1', '0.2']
-    },
-    {
-        symbol: 'ETH',
-        address: ethers.ZeroAddress,
-        decimals: 18,
-        logo: '/eth-icon.svg',
-        quickAmounts: ['0.01', '0.05', '0.1', '0.2']
+        logo: '/inj-icon.svg',
+        quickAmounts: ['0.001', '0.005', '0.01', '0.02']
     }
 ];
-
-export const BASE_RPC_URL = "https://mainnet.base.org";

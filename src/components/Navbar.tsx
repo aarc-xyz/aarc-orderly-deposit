@@ -20,9 +20,9 @@ export const Navbar = ({ handleDisconnect }: { handleDisconnect: () => void }) =
                         className="w-6 h-6"
                     />
                     <img
-                        className="h-12 w-auto"
-                        src="/apex-name-logo.svg"
-                        alt="Apex Omni Logo"
+                        className="h-6 w-auto"
+                        src="/injective-name-logo.svg"
+                        alt="Injective Logo"
                     />
                 </div>
                 <div className="flex items-center space-x-4">

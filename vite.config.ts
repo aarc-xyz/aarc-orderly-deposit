@@ -10,5 +10,20 @@ export default defineConfig({
     allowedHosts: [
       '.onrender.com' // This will allow all subdomains on render.com
     ]
-  }
+  },
+  define: {
+    global: 'window',
+  },
+  resolve: {
+    alias: {
+      buffer: 'buffer/',
+    },
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      define: {
+        global: 'globalThis',
+      },
+    },
+  },
 })
