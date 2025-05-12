@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useAccount, useDisconnect } from 'wagmi';
 import { ethers } from 'ethers';
 import { AarcFundKitModal } from '@aarc-xyz/fundkit-web-sdk';
@@ -7,6 +7,7 @@ import { Navbar } from './Navbar';
 import StyledConnectButton from './StyledConnectButton';
 import { TokenConfig } from '../types';
 import { getEthereumAddress } from '@injectivelabs/sdk-ts';
+import { cexConfig } from '../config/cexConfig';
 
 export const InjectiveDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitModal }) => {
     const [amount, setAmount] = useState('20');
@@ -17,6 +18,10 @@ export const InjectiveDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitMod
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const shouldDisableInteraction = !address;
     const [destinationAddress, setDestinationAddress] = useState('');
+
+    const cexAarcModalRef = useRef(new AarcFundKitModal(cexConfig));
+
+    const cexModal = cexAarcModalRef.current;
 
     const handleDisconnect = () => {
         setAmount('20');
@@ -66,6 +71,20 @@ export const InjectiveDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitMod
             console.error("Error preparing deposit:", error);
             setIsProcessing(false);
             aarcModal.close();
+        }
+    };
+
+    const handleBinanceWithdraw = async () => {
+        if(!address) return;
+
+        try{
+            cexModal.updateRequestedAmount(Number(amount));
+            cexModal.updateDestinationToken(selectedToken.address);
+            cexModal.updateDestinationChainId(SupportedChainId.ETHEREUM);
+            cexModal.updateDestinationWalletAddress(address);
+            cexModal.openModal();
+        }catch(error){
+            console.error("Error withdrawing INJ from Binance:", error);
         }
     };
 
@@ -210,6 +229,14 @@ export const InjectiveDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitMod
                         className="w-full h-11 mt-2 bg-[#A5E547] hover:opacity-90 text-[#003300] font-semibold rounded-2xl border border-[rgba(0,51,0,0.05)] flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isProcessing ? 'Processing...' : 'Continue'}
+                    </button>
+
+                    <button
+                        onClick={handleBinanceWithdraw}
+                        disabled={isProcessing || shouldDisableInteraction}
+                        className="w-full h-11 mt-2 bg-[#A5E547] hover:opacity-90 text-[#003300] font-semibold rounded-2xl border border-[rgba(0,51,0,0.05)] flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Withdraw from CEX
                     </button>
 
                     {/* Powered by Footer */}

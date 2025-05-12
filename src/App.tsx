@@ -11,9 +11,7 @@ import DepositModal from './components/InjectiveDepositModal';
 const queryClient = new QueryClient();
 
 function App() {
-  const aarcModalRef = useRef(
-    new AarcFundKitModal(aarcConfig)
-  );
+  const aarcModalRef = useRef(new AarcFundKitModal(aarcConfig));
 
   const aarcModal = aarcModalRef.current;
 
