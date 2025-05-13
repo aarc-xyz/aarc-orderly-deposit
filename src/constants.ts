@@ -25,6 +25,6 @@ export const TOKENS: TokenConfig[] = [
         address: '0xe28b3B32B6c345A34Ff64674606124Dd5Aceca30',
         decimals: 18,
         logo: '/inj-icon.svg',
-        quickAmounts: ['0.001', '0.005', '0.01', '0.02']
+        quickAmounts: ['2', '5', '10', '12']
     }
 ];
