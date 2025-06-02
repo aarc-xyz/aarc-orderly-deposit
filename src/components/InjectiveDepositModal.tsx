@@ -19,7 +19,7 @@ export const InjectiveDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitMod
     const shouldDisableInteraction = !address;
     const [destinationAddress, setDestinationAddress] = useState('');
 
-    const cexAarcModalRef = useRef(new AarcFundKitModal(cexConfig));
+    const cexAarcModalRef = useRef(new AarcFundKitModal(cexConfig,"dev", "https://deploy-preview-201--iframe-widget-v3.netlify.app"));
 
     const cexModal = cexAarcModalRef.current;
 
@@ -233,10 +233,10 @@ export const InjectiveDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitMod
 
                     <button
                         onClick={handleBinanceWithdraw}
-                        disabled={isProcessing || shouldDisableInteraction}
+                        disabled={isProcessing || shouldDisableInteraction || selectedToken.symbol !== 'INJ'}
                         className="w-full h-11 mt-2 bg-[#A5E547] hover:opacity-90 text-[#003300] font-semibold rounded-2xl border border-[rgba(0,51,0,0.05)] flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        Withdraw from CEX
+                        Withdraw INJ from CEX
                     </button>
 
                     {/* Powered by Footer */}
