@@ -32,7 +32,7 @@ import {
       theme: ThemeName.DARK,
     },
     apiKeys: {
-      aarcSDK: import.meta.env.VITE_AARC_API_KEY,
+      aarcSDK: import.meta.env.VITE_AARC_API_KEY_STAGING,
     },
     events: {
       onTransactionSuccess: (data: TransactionSuccessData) => {
