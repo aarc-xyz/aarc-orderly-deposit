@@ -59,7 +59,7 @@ export const InjectiveDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitMod
                         "type": "function"
                     }
                 ]),
-                calldataParams: `${selectedToken.address},0x000000000000000000000000${address.slice(2)},AARC,""`,
+                calldataParams: `${selectedToken.address},0x000000000000000000000000${address.slice(2)},AARC,`,
                 contractName: "Injective Deposit",
                 contractGasLimit: "800000",
                 contractLogoURI: "https://explorer.injective.network/favicon.png"
