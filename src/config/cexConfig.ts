@@ -4,10 +4,12 @@ import {
     TransactionSuccessData,
     TransactionErrorData,
     SourceConnectorName,
-  } from "@aarc-xyz/fundkit-web-sdk";
+  } from "@aarc-dev/fundkit-web-sdk";
   
   export const cexConfig: FKConfig = {
     appName: "Injective x Aarc",
+    userId: "0x",
+    dappId: "Injective CEX demo",
     module: {
       exchange: {
         enabled: true,

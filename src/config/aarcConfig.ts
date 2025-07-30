@@ -4,11 +4,13 @@ import {
   TransactionSuccessData,
   TransactionErrorData,
   SourceConnectorName,
-} from "@aarc-xyz/fundkit-web-sdk";
+} from "@aarc-dev/fundkit-web-sdk";
 import { INJECTIVE_ADDRESS, SupportedChainId } from "../constants";
 
 export const aarcConfig: FKConfig = {
   appName: "Injective x Aarc",
+  userId: "0x",
+  dappId: "Injective demo",
   module: {
     exchange: {
       enabled: true,
@@ -32,6 +34,7 @@ export const aarcConfig: FKConfig = {
       contractGasLimit: "300000", // Standard gas limit, can be adjusted if needed
       contractLogoURI: "https://explorer.injective.network/favicon.png",
     },
+    tokenAddress: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
     walletAddress: INJECTIVE_ADDRESS[SupportedChainId.ETHEREUM],
     chainId: 1, // Base chain ID
   },
@@ -40,7 +43,7 @@ export const aarcConfig: FKConfig = {
     theme: ThemeName.DARK,
   },
   apiKeys: {
-    aarcSDK: import.meta.env.VITE_AARC_API_KEY_PROD,
+    aarcSDK: import.meta.env.VITE_AARC_API_KEY_STAGING,
   },
   events: {
     onTransactionSuccess: (data: TransactionSuccessData) => {

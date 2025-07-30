@@ -17,4 +17,4 @@ const DisconnectButton = ({ handleDisconnect }: { handleDisconnect: () => void }
     );
 };
 
-export default DisconnectButton; 
+export default DisconnectButton;
