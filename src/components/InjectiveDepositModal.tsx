@@ -45,7 +45,20 @@ export const InjectiveDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitMod
 
             aarcModal.updateDestinationContract({
                 contractAddress: INJECTIVE_ADDRESS[SupportedChainId.ETHEREUM],
-                calldataABI: "function sendToInjective(address _tokenContract, bytes32 _destination, uint256 _amount, string _data) external",
+                calldataABI: JSON.stringify([
+                    {
+                        "inputs": [
+                            { "internalType": "address", "name": "_tokenContract", "type": "address" },
+                            { "internalType": "bytes32", "name": "_destination", "type": "bytes32" },
+                            { "internalType": "uint256", "name": "_amount", "type": "uint256" },
+                            { "internalType": "string", "name": "_data", "type": "string" }
+                        ],
+                        "name": "sendToInjective",
+                        "outputs": [],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                    }
+                ]),
                 calldataParams: `${selectedToken.address},0x000000000000000000000000${address.slice(2)},AARC,""`,
                 contractName: "Injective Deposit",
                 contractGasLimit: "800000",
