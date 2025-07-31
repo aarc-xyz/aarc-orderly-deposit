@@ -26,7 +26,7 @@ export const Navbar = ({ handleDisconnect }: { handleDisconnect: () => void }) =
                     />
                 </div>
                 <div className="flex items-center space-x-4">
-                    {address ? <DisconnectButton handleDisconnect={handleDisconnect} /> : <StyledConnectButton />}
+                    {address ? <DisconnectButton handleDisconnect={handleDisconnect} /> : <StyledConnectButton fixWidth={true} />}
                     {/* <img src="/dark_mode.svg" alt="Theme toggle" className="w-10 h-10" /> */}
                 </div>
             </div>
