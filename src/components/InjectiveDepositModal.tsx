@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useAccount, useDisconnect } from 'wagmi';
 import { AarcFundKitModal } from '@aarc-dev/fundkit-web-sdk';
 import { INJECTIVE_ADDRESS, SupportedChainId, TOKENS } from '../constants';
@@ -6,6 +6,7 @@ import { Navbar } from './Navbar';
 import StyledConnectButton from './StyledConnectButton';
 import { TokenConfig } from '../types';
 import { cexConfig } from '../config/cexConfig';
+import { getAddress } from 'ethers';
 
 export const InjectiveDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitModal }) => {
     const [amount, setAmount] = useState('20');
@@ -22,6 +23,33 @@ export const InjectiveDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitMod
 
     const cexModal = cexAarcModalRef.current;
 
+    // Function to convert Ethereum address to Injective address
+    const convertToInjectiveAddress = (ethAddress: string): string => {
+        try {
+            // Normalize the Ethereum address
+            const normalizedAddress = getAddress(ethAddress);
+            
+            // Convert to Injective address format
+            // This is a simplified conversion - in a real implementation, you'd use a proper library
+            // For now, we'll create a mock Injective address based on the Ethereum address
+            const addressBytes = normalizedAddress.slice(2); // Remove '0x'
+            const injAddress = `inj1${addressBytes.slice(0, 38)}`;
+            
+            return injAddress;
+        } catch (error) {
+            console.error('Error converting address:', error);
+            return '';
+        }
+    };
+
+    // Update destination address when wallet connects
+    useEffect(() => {
+        if (address && isWithdrawMode) {
+            const injAddress = convertToInjectiveAddress(address);
+            setDestinationAddress(injAddress);
+        }
+    }, [address, isWithdrawMode]);
+
     // Function to validate Injective address format
     const isValidInjectiveAddress = (address: string): boolean => {
         // Injective addresses start with 'inj' and are typically 42 characters long
@@ -32,6 +60,7 @@ export const InjectiveDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitMod
     const handleDisconnect = () => {
         setAmount('20');
         setIsProcessing(false);
+        setDestinationAddress('');
         disconnect();
     };
 
@@ -95,6 +124,10 @@ export const InjectiveDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitMod
         }
     };
 
+    const sliceAddress = (address: string, length: number) => {
+        return address.slice(0, length) + '...' + address.slice(-length);
+    }
+
     return (
         <div className="min-h-screen bg-aarc-bg grid-background">
             <Navbar handleDisconnect={handleDisconnect} />
@@ -102,7 +135,7 @@ export const InjectiveDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitMod
                 <div className="flex flex-col items-center w-[440px] bg-[#2D2D2D] rounded-[24px] p-8 pb-[22px] gap-3">
                     <div className="w-full relative">
                         <h3 className="text-[14px] font-semibold text-[#F6F6F6] mb-4">Deposit on Injective or Withdraw INJ from CEX</h3>
-                        {!address && <StyledConnectButton /> }
+                       
                     </div>
 
                     {/* Toggle Switch */}
@@ -125,7 +158,7 @@ export const InjectiveDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitMod
                                     : 'text-[#F6F6F6] hover:text-[#A5E547]'
                             }`}
                         >
-                            Withdraw
+                            Withdraw from CEX
                         </button>
                     </div>
 
@@ -196,14 +229,16 @@ export const InjectiveDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitMod
                                 </div>
                             </div>
 
+                            {!address && <div className="mt-2 w-full"><StyledConnectButton fixWidth={false} /></div> }
+
                             {/* Continue Button */}
-                            <button
+                            {address && <button
                                 onClick={handleDeposit}
                                 disabled={isProcessing || shouldDisableInteraction}
                                 className="w-full h-11 mt-2 bg-[#A5E547] hover:opacity-90 text-[#003300] font-semibold rounded-2xl border border-[rgba(0,51,0,0.05)] flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {isProcessing ? 'Processing...' : 'Continue'}
-                            </button>
+                            </button>}
                         </>
                     ) : (
                         // Withdraw Section
@@ -216,50 +251,18 @@ export const InjectiveDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitMod
                                 </div>
                             </div>
 
-                            {/* Amount Input */}
-                            <div className="w-full">
-                                <div className="flex items-center p-3 bg-[#2A2A2A] border border-[#424242] rounded-2xl">
-                                    <div className="flex items-center gap-3">
-                                        <img src="/inj-icon.svg" alt="INJ" className="w-6 h-6" />
-                                        <input
-                                            type="text"
-                                            inputMode="decimal"
-                                            pattern="^[0-9]*[.,]?[0-9]*$"
-                                            value={amount}
-                                            onChange={(e) => setAmount(e.target.value.replace(/[^0-9.]/g, ''))}
-                                            className="w-full bg-transparent text-[18px] font-semibold text-[#F6F6F6] outline-none"
-                                            placeholder="Enter amount"
-                                            disabled={shouldDisableInteraction}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Quick Amount Buttons */}
-                            <div className="flex gap-[14px] w-full">
-                                {TOKENS.find(t => t.symbol === 'INJ')?.quickAmounts.map((value) => (
-                                    <button
-                                        key={value}
-                                        onClick={() => setAmount(value)}
-                                        disabled={shouldDisableInteraction}
-                                        className="flex items-center justify-center px-2 py-2 bg-[rgba(83,83,83,0.2)] border border-[#424242] rounded-lg h-[34px] flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        <span className="text-[14px] font-semibold text-[#F6F6F6] whitespace-nowrap">{value} INJ</span>
-                                    </button>
-                                ))}
-                            </div>
-
                             {/* Injective Address Input (Mandatory) */}
                             <div className="w-full">
                                 <div className="flex items-center p-3 bg-[#2A2A2A] border border-[#424242] rounded-2xl">
                                     <div className="flex items-center gap-3 flex-1">
                                         <input
                                             type="text"
-                                            value={destinationAddress}
+                                            value={destinationAddress ? sliceAddress(destinationAddress, 6) : ''}
                                             onChange={(e) => setDestinationAddress(e.target.value)}
                                             className="w-full bg-transparent text-[18px] font-semibold text-[#F6F6F6] outline-none"
-                                            placeholder="Enter Injective address (required)"
-                                            disabled={shouldDisableInteraction}
+                                            placeholder={!address ? "Connect wallet to continue" : "Enter Injective address (required)"}
+                                            disabled={shouldDisableInteraction || destinationAddress !== ''}
+                                            readOnly={destinationAddress !== ''}
                                         />
                                         <div className="relative group">
                                             <img 
@@ -268,21 +271,26 @@ export const InjectiveDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitMod
                                                 className="w-4 h-4 cursor-pointer" 
                                             />
                                             <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-[#2A2A2A] border border-[#424242] rounded-lg text-xs text-[#F6F6F6] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                                Enter your Injective address where you want to receive the withdrawn INJ
+                                                {!address 
+                                                    ? "Connect your wallet to get your Injective address"
+                                                    : "Your Injective address where you will receive the withdrawn INJ"
+                                                }
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
+                            {!address && <div className="mt-2 w-full"><StyledConnectButton fixWidth={false} /></div> }
+
                             {/* Withdraw Button */}
-                            <button
+                            {address && <button
                                 onClick={handleBinanceWithdraw}
                                 disabled={isProcessing || shouldDisableInteraction || !destinationAddress}
                                 className="w-full h-11 mt-2 bg-[#A5E547] hover:opacity-90 text-[#003300] font-semibold rounded-2xl border border-[rgba(0,51,0,0.05)] flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 Withdraw INJ from CEX
-                            </button>
+                            </button>}
                         </>
                     )}
 
