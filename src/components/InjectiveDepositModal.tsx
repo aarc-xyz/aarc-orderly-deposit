@@ -19,7 +19,7 @@ export const InjectiveDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitMod
     const [destinationAddress, setDestinationAddress] = useState('');
     const [isWithdrawMode, setIsWithdrawMode] = useState(false);
 
-    const cexAarcModalRef = useRef(new AarcFundKitModal(cexConfig,"dev", "https://deploy-preview-207--iframe-widget-v3.netlify.app"));
+    const cexAarcModalRef = useRef(new AarcFundKitModal(cexConfig));
 
     const cexModal = cexAarcModalRef.current;
 
@@ -71,6 +71,15 @@ export const InjectiveDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitMod
             setIsProcessing(true);
             aarcModal.updateRequestedAmount(Number(amount));
             aarcModal.updateDestinationToken(selectedToken.address);
+
+            if(selectedToken.symbol === 'INJ'){
+                //@ts-expect-error - only INJ is supported for now
+                aarcModal.updateModules({
+                    exchange: {
+                        enabled: false
+                    }
+                })
+            }
 
             aarcModal.updateDestinationContract({
                 contractAddress: INJECTIVE_ADDRESS[SupportedChainId.ETHEREUM],
