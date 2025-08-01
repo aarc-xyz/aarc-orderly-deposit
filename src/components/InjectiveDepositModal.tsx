@@ -72,6 +72,15 @@ export const InjectiveDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitMod
             aarcModal.updateRequestedAmount(Number(amount));
             aarcModal.updateDestinationToken(selectedToken.address);
 
+            if(selectedToken.symbol === 'INJ'){
+                //@ts-expect-error - only INJ is supported for now
+                aarcModal.updateModules({
+                    exchange: {
+                        enabled: false
+                    }
+                })
+            }
+
             aarcModal.updateDestinationContract({
                 contractAddress: INJECTIVE_ADDRESS[SupportedChainId.ETHEREUM],
                 calldataABI: JSON.stringify([
