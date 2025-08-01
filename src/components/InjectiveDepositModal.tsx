@@ -42,9 +42,9 @@ export const InjectiveDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitMod
         }
     };
 
-    // Update destination address when wallet connects
+    // Update destination address when wallet connects (only for deposit mode)
     useEffect(() => {
-        if (address && isWithdrawMode) {
+        if (address && !isWithdrawMode) {
             const injAddress = convertToInjectiveAddress(address);
             setDestinationAddress(injAddress);
         }
@@ -123,19 +123,15 @@ export const InjectiveDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitMod
         }
 
         try{
-            cexModal.updateRequestedAmount(Number(amount));
-            cexModal.updateDestinationToken(selectedToken.address);
-            cexModal.updateDestinationChainId(SupportedChainId.ETHEREUM);
             cexModal.updateDestinationWalletAddress(destinationAddress);
+            console.log(destinationAddress)
             cexModal.openModal();
         }catch(error){
             console.error("Error withdrawing INJ from Binance:", error);
         }
     };
 
-    const sliceAddress = (address: string, length: number) => {
-        return address.slice(0, length) + '...' + address.slice(-length);
-    }
+
 
     return (
         <div className="min-h-screen bg-aarc-bg grid-background">
@@ -266,12 +262,11 @@ export const InjectiveDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitMod
                                     <div className="flex items-center gap-3 flex-1">
                                         <input
                                             type="text"
-                                            value={destinationAddress ? sliceAddress(destinationAddress, 6) : ''}
+                                            value={destinationAddress}
                                             onChange={(e) => setDestinationAddress(e.target.value)}
                                             className="w-full bg-transparent text-[18px] font-semibold text-[#F6F6F6] outline-none"
-                                            placeholder={!address ? "Connect wallet to continue" : "Enter Injective address (required)"}
-                                            disabled={shouldDisableInteraction || destinationAddress !== ''}
-                                            readOnly={destinationAddress !== ''}
+                                            placeholder="Enter Injective address (required)"
+                                            disabled={shouldDisableInteraction}
                                         />
                                         <div className="relative group">
                                             <img 
@@ -280,10 +275,7 @@ export const InjectiveDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitMod
                                                 className="w-4 h-4 cursor-pointer" 
                                             />
                                             <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-[#2A2A2A] border border-[#424242] rounded-lg text-xs text-[#F6F6F6] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                                {!address 
-                                                    ? "Connect your wallet to get your Injective address"
-                                                    : "Your Injective address where you will receive the withdrawn INJ"
-                                                }
+                                                Enter the Injective address where you will receive the withdrawn INJ
                                             </div>
                                         </div>
                                     </div>

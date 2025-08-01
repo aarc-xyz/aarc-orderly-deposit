@@ -4,18 +4,18 @@ import {
     TransactionSuccessData,
     TransactionErrorData,
     SourceConnectorName,
+    DefaultFlow,
   } from "@aarc-dev/fundkit-web-sdk";
   
   export const cexConfig: FKConfig = {
     appName: "Injective x Aarc",
     userId: "0x",
     dappId: "Injective CEX demo",
+    //@ts-expect-error - defaultFlow is not supported in the SDK
+    defaultFlow: DefaultFlow.DEPOSIT_FIRST,
     module: {
       exchange: {
         enabled: true,
-        // @ts-expect-error - only INJ is supported for now
-        fromTokenAddress: '0xa2B726B1145A4773F68593CF171187d8EBe4d495',
-        fromChainId: '56',
       },
       onRamp: {
         enabled: false,
