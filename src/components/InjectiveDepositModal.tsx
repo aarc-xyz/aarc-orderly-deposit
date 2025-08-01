@@ -6,7 +6,7 @@ import { Navbar } from './Navbar';
 import StyledConnectButton from './StyledConnectButton';
 import { TokenConfig } from '../types';
 import { cexConfig } from '../config/cexConfig';
-import { getAddress } from 'ethers';
+import { convertToInjectiveAddress, isValidInjectiveAddress } from '../utils/injectiveAddress';
 
 export const InjectiveDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitModal }) => {
     const [amount, setAmount] = useState('20');
@@ -23,39 +23,15 @@ export const InjectiveDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitMod
 
     const cexModal = cexAarcModalRef.current;
 
-    // Function to convert Ethereum address to Injective address
-    const convertToInjectiveAddress = (ethAddress: string): string => {
-        try {
-            // Normalize the Ethereum address
-            const normalizedAddress = getAddress(ethAddress);
-            
-            // Convert to Injective address format
-            // This is a simplified conversion - in a real implementation, you'd use a proper library
-            // For now, we'll create a mock Injective address based on the Ethereum address
-            const addressBytes = normalizedAddress.slice(2); // Remove '0x'
-            const injAddress = `inj1${addressBytes.slice(0, 38)}`;
-            
-            return injAddress;
-        } catch (error) {
-            console.error('Error converting address:', error);
-            return '';
-        }
-    };
-
-    // Update destination address when wallet connects (only for deposit mode)
+    // Update destination address when wallet connects
     useEffect(() => {
-        if (address && !isWithdrawMode) {
+        if (address) {
             const injAddress = convertToInjectiveAddress(address);
             setDestinationAddress(injAddress);
+        } else {
+            setDestinationAddress('');
         }
-    }, [address, isWithdrawMode]);
-
-    // Function to validate Injective address format
-    const isValidInjectiveAddress = (address: string): boolean => {
-        // Injective addresses start with 'inj' and are typically 42 characters long
-        const injAddressRegex = /^inj1[a-zA-Z0-9]{38}$/;
-        return injAddressRegex.test(address);
-    };
+    }, [address]);
 
     const handleDisconnect = () => {
         setAmount('20');
