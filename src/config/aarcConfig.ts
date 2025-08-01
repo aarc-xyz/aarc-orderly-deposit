@@ -43,7 +43,7 @@ export const aarcConfig: FKConfig = {
     theme: ThemeName.DARK,
   },
   apiKeys: {
-    aarcSDK: import.meta.env.VITE_AARC_API_KEY_STAGING,
+    aarcSDK: import.meta.env.VITE_AARC_API_KEY,
   },
   events: {
     onTransactionSuccess: (data: TransactionSuccessData) => {
