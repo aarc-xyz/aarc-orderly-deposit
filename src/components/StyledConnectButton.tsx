@@ -1,8 +1,12 @@
 import { ConnectButton as RainbowConnectButton } from "@rainbow-me/rainbowkit";
 
-const StyledConnectButton = () => {
+const StyledConnectButton = ({
+    fixWidth = false
+}:{
+    fixWidth: boolean
+}) => {
     return (
-        <div className="w-[178px] h-[40px]">
+        <div className={`${fixWidth ? 'w-[178px]' : 'w-full'} h-[40px]`}>
             <RainbowConnectButton.Custom>
                 {({ openConnectModal }) => {
                     return (
