@@ -123,9 +123,6 @@ export const InjectiveDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitMod
         }
 
         try{
-            cexModal.updateRequestedAmount(Number(amount));
-            cexModal.updateDestinationToken(selectedToken.address);
-            cexModal.updateDestinationChainId(SupportedChainId.ETHEREUM);
             cexModal.updateDestinationWalletAddress(destinationAddress);
             cexModal.openModal();
         }catch(error){

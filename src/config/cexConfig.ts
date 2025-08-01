@@ -13,9 +13,6 @@ import {
     module: {
       exchange: {
         enabled: true,
-        // @ts-expect-error - only INJ is supported for now
-        fromTokenAddress: '0xa2B726B1145A4773F68593CF171187d8EBe4d495',
-        fromChainId: '56',
       },
       onRamp: {
         enabled: false,
