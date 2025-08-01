@@ -11,7 +11,7 @@ import DepositModal from './components/InjectiveDepositModal';
 const queryClient = new QueryClient();
 
 function App() {
-  const aarcModalRef = useRef(new AarcFundKitModal(aarcConfig, "dev", "https://deploy-preview-207--iframe-widget-v3.netlify.app"));
+  const aarcModalRef = useRef(new AarcFundKitModal(aarcConfig));
 
   const aarcModal = aarcModalRef.current;
 

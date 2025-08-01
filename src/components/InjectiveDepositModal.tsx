@@ -19,7 +19,7 @@ export const InjectiveDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitMod
     const [destinationAddress, setDestinationAddress] = useState('');
     const [isWithdrawMode, setIsWithdrawMode] = useState(false);
 
-    const cexAarcModalRef = useRef(new AarcFundKitModal(cexConfig,"dev", "https://deploy-preview-207--iframe-widget-v3.netlify.app"));
+    const cexAarcModalRef = useRef(new AarcFundKitModal(cexConfig));
 
     const cexModal = cexAarcModalRef.current;
 
