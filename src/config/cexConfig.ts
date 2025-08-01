@@ -4,12 +4,15 @@ import {
     TransactionSuccessData,
     TransactionErrorData,
     SourceConnectorName,
+    DefaultFlow,
   } from "@aarc-dev/fundkit-web-sdk";
   
   export const cexConfig: FKConfig = {
     appName: "Injective x Aarc",
     userId: "0x",
     dappId: "Injective CEX demo",
+    //@ts-expect-error - defaultFlow is not supported in the SDK
+    defaultFlow: DefaultFlow.DEPOSIT_FIRST,
     module: {
       exchange: {
         enabled: true,
@@ -31,7 +34,7 @@ import {
       theme: ThemeName.DARK,
     },
     apiKeys: {
-      aarcSDK: import.meta.env.VITE_AARC_API_KEY,
+      aarcSDK: import.meta.env.VITE_AARC_API_KEY_STAGING,
     },
     events: {
       onTransactionSuccess: (data: TransactionSuccessData) => {
