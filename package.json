@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "node --max-old-space-size=8192 ./node_modules/.bin/tsc -b && node --max-old-space-size=8192 ./node_modules/.bin/vite build",
+    "build:prod": "NODE_OPTIONS='--max-old-space-size=8192' npm run build",
+    "build:dev": "NODE_OPTIONS='--max-old-space-size=4096' npm run build",
     "lint": "eslint .",
     "preview": "vite preview --port $PORT --host 0.0.0.0"
   },
