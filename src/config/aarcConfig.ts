@@ -5,12 +5,12 @@ import {
   TransactionErrorData,
   SourceConnectorName,
 } from "@aarc-dev/fundkit-web-sdk";
-import { INJECTIVE_ADDRESS, SupportedChainId } from "../constants";
+import { ORDERLY_CONTRACT_ADDRESS, USDT_ON_ARBITRUM } from "../constants";
 
 export const aarcConfig: FKConfig = {
-  appName: "Injective x Aarc",
+  appName: "Orderly x Aarc",
   userId: "0x",
-  dappId: "Injective demo",
+  dappId: "Orderly demo",
   module: {
     exchange: {
       enabled: true,
@@ -27,16 +27,9 @@ export const aarcConfig: FKConfig = {
     },
   },
   destination: {
-    contract: {
-      contractAddress: INJECTIVE_ADDRESS[SupportedChainId.ETHEREUM],
-      contractName: "Injective Deposit",
-      contractPayload: "0x", // This will be updated dynamically
-      contractGasLimit: "300000", // Standard gas limit, can be adjusted if needed
-      contractLogoURI: "https://explorer.injective.network/favicon.png",
-    },
-    tokenAddress: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-    walletAddress: INJECTIVE_ADDRESS[SupportedChainId.ETHEREUM],
-    chainId: 1, // Base chain ID
+    tokenAddress: USDT_ON_ARBITRUM,
+    chainId: 42161,
+    walletAddress: ORDERLY_CONTRACT_ADDRESS,
   },
   appearance: {
     roundness: 42,

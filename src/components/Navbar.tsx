@@ -1,9 +1,4 @@
-import { useAccount } from "wagmi";
-import StyledConnectButton from "./StyledConnectButton";
-import DisconnectButton from "./DisconnectButton";
-
-export const Navbar = ({ handleDisconnect }: { handleDisconnect: () => void }) => {
-    const { address } = useAccount();
+export const Navbar = () => {
 
     return (
         <header className="fixed top-0 left-0 right-0 z-50 bg-aarc-bg/80 backdrop-blur-sm">
@@ -20,14 +15,10 @@ export const Navbar = ({ handleDisconnect }: { handleDisconnect: () => void }) =
                         className="w-6 h-6"
                     />
                     <img
-                        className="h-6 w-auto"
-                        src="/injective-name-logo.svg"
-                        alt="Injective Logo"
+                        className="h-10 w-auto"
+                        src="/orderly-name-logo.svg"
+                        alt="Orderly Logo"
                     />
-                </div>
-                <div className="flex items-center space-x-4">
-                    {address ? <DisconnectButton handleDisconnect={handleDisconnect} /> : <StyledConnectButton fixWidth={true} />}
-                    {/* <img src="/dark_mode.svg" alt="Theme toggle" className="w-10 h-10" /> */}
                 </div>
             </div>
         </header>
