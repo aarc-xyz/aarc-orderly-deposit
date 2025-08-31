@@ -16,20 +16,14 @@ export default defineConfig({
         manualChunks: {
           // Split vendor chunks to reduce memory usage
           vendor: ['react', 'react-dom'],
-          orderly: ['@orderly.network/hooks', '@orderly.network/react-app', '@orderly.network/trading'],
+          orderly: ['@orderly.network/hooks', '@orderly.network/react-app'],
           aarc: ['@aarc-dev/fundkit-web-sdk', '@aarc-xyz/eth-connector'],
           wagmi: ['wagmi', 'viem', '@rainbow-me/rainbowkit'],
         },
       },
     },
     // Reduce memory usage during build
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-      },
-    },
+    minify: 'esbuild',
   },
   preview: {
     allowedHosts: [
