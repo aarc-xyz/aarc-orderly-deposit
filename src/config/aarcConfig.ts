@@ -5,7 +5,7 @@ import {
   TransactionErrorData,
   SourceConnectorName,
 } from "@aarc-dev/fundkit-web-sdk";
-import { ORDERLY_CONTRACT_ADDRESS, USDT_ON_ARBITRUM } from "../constants";
+import { USDC_ON_ARBITRUM_ADDRESS } from "../constants";
 
 export const aarcConfig: FKConfig = {
   appName: "Orderly x Aarc",
@@ -27,9 +27,8 @@ export const aarcConfig: FKConfig = {
     },
   },
   destination: {
-    tokenAddress: USDT_ON_ARBITRUM,
+    tokenAddress: USDC_ON_ARBITRUM_ADDRESS,
     chainId: 42161,
-    walletAddress: ORDERLY_CONTRACT_ADDRESS,
   },
   appearance: {
     roundness: 42,

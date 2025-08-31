@@ -1,7 +1,6 @@
 import { WagmiProvider } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import '@rainbow-me/rainbowkit/styles.css';
-import "@orderly.network/ui/dist/styles.css";
 import './index.css';
 import { AarcFundKitModal } from '@aarc-dev/fundkit-web-sdk';
 import { useRef } from 'react';
@@ -15,7 +14,7 @@ import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 const queryClient = new QueryClient();
 
 function App() {
-  const aarcModalRef = useRef(new AarcFundKitModal(aarcConfig));
+  const aarcModalRef = useRef(new AarcFundKitModal(aarcConfig, "dev", "https://deploy-preview-209--iframe-widget-v3.netlify.app"));
 
   const aarcModal = aarcModalRef.current;
 
