@@ -5,7 +5,7 @@ import { ORDERLY_CONTRACT_ADDRESS, ORDERLY_ABI, SupportedChainId, USDC_ON_ARBITR
 import { useAccount, useChainId, useDisconnect, useSwitchChain, useWalletClient } from 'wagmi';
 import StyledConnectButton from './StyledConnectButton';
 import { ethers } from 'ethers';
-import { useAccount as useOrderlyAccount, useAccountInstance } from '@orderly.network/hooks';
+import { useAccount as useOrderlyAccount } from '@orderly.network/hooks';
 
 export const OrderlyDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitModal }) => {
     const [isProcessing, setIsProcessing] = useState(false);
@@ -19,8 +19,7 @@ export const OrderlyDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitModal
     const { disconnect } = useDisconnect();
     const [showProcessingModal, setShowProcessingModal] = useState(false);
 
-    const { state: orderlyState, createAccount } = useOrderlyAccount();
-    const accountInstance = useAccountInstance();
+    const { state: orderlyState, createAccount, account: orderlyAccount } = useOrderlyAccount();
 
     // Message event listener for Aarc iframe communication
     useEffect(() => {
@@ -52,13 +51,13 @@ export const OrderlyDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitModal
     // Check Orderly account status
     useEffect(() => {
         const checkOrderlyAccount = async () => {
-            if (!address || !accountInstance) return;
+            if (!address || !orderlyAccount) return;
 
             try {
                 console.log("Checking Orderly account status for:", address);
 
                 // Set the address in Orderly account using the accountInstance
-                const nextState = await accountInstance.setAddress(address, {
+                const nextState = await orderlyAccount.setAddress(address, {
                     provider: window.ethereum,
                     chain: {
                         id: `0x${chainId?.toString(16)}`,
@@ -70,24 +69,25 @@ export const OrderlyDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitModal
                 });
 
                 console.log("Orderly account state after setAddress:", nextState);
-                console.log("Current Orderly state:", orderlyState);
+                console.log("Current Orderly state:", orderlyAccount.stateValue);
             } catch (error) {
                 console.error("Error checking Orderly account:", error);
             }
         };
 
         checkOrderlyAccount();
-    }, [address, chainId, accountInstance]); // Removed orderlyState and accountInfo to prevent infinite loops
+    }, [address, chainId, orderlyAccount]); // Removed orderlyState and accountInfo to prevent infinite loops
 
     const handleOrderlyRegistration = async () => {
-        if (!address || !accountInstance) {
+        if (!address || !orderlyAccount) {
             setError("Wallet or Orderly account not available");
             return;
         }
 
         try {
             setError(null);
-            console.log("Creating Orderly account for address:", address);
+            orderlyState.address = address;
+            console.log("Creating Orderly account for address:", orderlyState);
 
             console.log("Address set, now creating account...");
             const createResult = await createAccount();
@@ -337,15 +337,6 @@ export const OrderlyDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitModal
                                             </button>
                                         )}
                                     </div>
-                                </div>
-                            )}
-
-                            {/* Error Display */}
-                            {error && (
-                                <div className="w-full p-3 bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.2)] rounded-xl">
-                                    <p className="text-xs text-[#FCA5A5] leading-4">
-                                        {error}
-                                    </p>
                                 </div>
                             )}
 
