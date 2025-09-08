@@ -22,31 +22,30 @@ export const OrderlyDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitModal
     const { state: orderlyState, createAccount } = useOrderlyAccount();
     const accountInstance = useAccountInstance();
 
+    // Message event listener for Aarc iframe communication
     useEffect(() => {
         const handleReceiveMessage = async (event: MessageEvent) => {
-            console.log("Message received:", event.data);
+            if (event?.data?.type === "requestStatus") {
+                const statusObj = event.data.data;
+                console.log("Received status object from Aarc:", statusObj);
 
-            // Handle messages from Aarc iframe
-            if (event?.data?.type === "depositAmountUSD") {
-                console.log("Received message from Aarc:", event.data);
-                const depositAmount = event.data.data;
-                console.log("depositAmount", depositAmount);
-
-                if (depositAmount && depositAmount > 0) {
-                    console.log("Setting amount to:", depositAmount);
-                    setAmount(depositAmount.toString());
+                if (statusObj && statusObj.destinationTokenAmount) {
+                    // Convert from wei to USD (assuming 6 decimals for USDC)
+                    const rawAmount = parseFloat(statusObj.destinationTokenAmount);
+                    const amountInUSD = rawAmount / 1000000;
+                    setAmount(amountInUSD.toString());
+                } else {
+                    console.log("No destinationTokenAmount in status object:", statusObj);
                 }
             }
         };
 
         // Add event listener
         window.addEventListener("message", handleReceiveMessage);
-        console.log("Message listener added");
 
         // Cleanup on unmount
         return () => {
             window.removeEventListener("message", handleReceiveMessage);
-            console.log("Message listener removed");
         };
     }, []);
 
@@ -90,18 +89,6 @@ export const OrderlyDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitModal
             setError(null);
             console.log("Creating Orderly account for address:", address);
 
-            // First ensure the address is set in the account instance
-            await accountInstance.setAddress(address, {
-                provider: window.ethereum,
-                chain: {
-                    id: `0x${chainId?.toString(16)}`,
-                    namespace: "evm" as any
-                },
-                wallet: {
-                    name: "MetaMask"
-                }
-            });
-
             console.log("Address set, now creating account...");
             const createResult = await createAccount();
             console.log("Account creation result:", createResult);
@@ -132,6 +119,14 @@ export const OrderlyDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitModal
 
         if (!amount) {
             setError("Please enter an amount");
+            return;
+        }
+
+        // Check minimum deposit amount
+        const amountNumber = parseFloat(amount);
+        console.log("Validating amount in depositToOrderly:", amountNumber);
+        if (isNaN(amountNumber) || amountNumber < 10) {
+            setError("Minimum deposit amount is $10 USD or equivalent");
             return;
         }
 
@@ -221,11 +216,24 @@ export const OrderlyDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitModal
             return;
         }
 
+        // Check minimum deposit amount
+        if (amount) {
+            const amountNumber = parseFloat(amount);
+            console.log("Validating amount:", amountNumber);
+            if (isNaN(amountNumber) || amountNumber < 10) {
+                setError("Minimum deposit amount is $10 USD or equivalent");
+                return;
+            }
+        } else {
+            console.log("No amount provided for validation");
+        }
+
         try {
             setIsProcessing(true);
             setError(null);
 
             aarcModal.updateDestinationWalletAddress(address as `0x${string}`);
+            aarcModal.config.userId = address as `0x${string}`;
 
             aarcModal.updateEvents({
                 onTransactionSuccess: () => {
@@ -292,6 +300,14 @@ export const OrderlyDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitModal
                                 </p>
                             </div>
 
+                            {/* Minimum Deposit Warning */}
+                            <div className="w-full flex gap-x-2 items-start p-4 bg-[rgba(255,183,77,0.05)] border border-[rgba(255,183,77,0.2)] rounded-2xl">
+                                <img src="/warning-icon.svg" alt="Warning" className="w-4 h-4 mt-[2px]" />
+                                <p className="text-xs font-bold text-[#F6F6F6] leading-5">
+                                    <span className="text-[#FFB74D]">Minimum deposit required:</span> $10 USD or equivalent
+                                </p>
+                            </div>
+
                             {/* Orderly Registration Status */}
                             {address && (
                                 <div className="w-full flex gap-x-2 items-start p-4 bg-[rgba(165,229,71,0.05)] border border-[rgba(165,229,71,0.2)] rounded-2xl">
@@ -321,6 +337,15 @@ export const OrderlyDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitModal
                                             </button>
                                         )}
                                     </div>
+                                </div>
+                            )}
+
+                            {/* Error Display */}
+                            {error && (
+                                <div className="w-full p-3 bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.2)] rounded-xl">
+                                    <p className="text-xs text-[#FCA5A5] leading-4">
+                                        {error}
+                                    </p>
                                 </div>
                             )}
 
