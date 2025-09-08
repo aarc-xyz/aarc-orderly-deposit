@@ -14,21 +14,21 @@ import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 const queryClient = new QueryClient();
 
 function App() {
-  const aarcModalRef = useRef(new AarcFundKitModal(aarcConfig, "dev", "https://deploy-preview-209--iframe-widget-v3.netlify.app"));
+  const aarcModalRef = useRef(new AarcFundKitModal(aarcConfig));
 
   const aarcModal = aarcModalRef.current;
 
   return (
-    <WalletConnectorProvider solanaInitial={{network: WalletAdapterNetwork.Mainnet }}>
-    <OrderlyAppProvider brokerId="orderly" brokerName="Orderly" networkId="mainnet">
-    <QueryClientProvider client={queryClient}>
-      <WagmiProvider config={wagmiConfig}>
-        <AarcEthWalletConnector aarcWebClient={aarcModal} debugLog={true} >
-          <DepositModal aarcModal={aarcModal} />
-        </AarcEthWalletConnector>
-      </WagmiProvider>
-    </QueryClientProvider>
-    </OrderlyAppProvider>
+    <WalletConnectorProvider solanaInitial={{ network: WalletAdapterNetwork.Mainnet }}>
+      <OrderlyAppProvider brokerId="orderly" brokerName="Orderly" networkId="mainnet">
+        <QueryClientProvider client={queryClient}>
+          <WagmiProvider config={wagmiConfig}>
+            <AarcEthWalletConnector aarcWebClient={aarcModal} debugLog={true} >
+              <DepositModal aarcModal={aarcModal} />
+            </AarcEthWalletConnector>
+          </WagmiProvider>
+        </QueryClientProvider>
+      </OrderlyAppProvider>
     </WalletConnectorProvider>
   );
 }
