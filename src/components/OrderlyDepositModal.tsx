@@ -1,6 +1,6 @@
 import { AarcFundKitModal } from '@aarc-dev/fundkit-web-sdk';
 import { Navbar } from './Navbar';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ORDERLY_CONTRACT_ADDRESS, ORDERLY_ABI, SupportedChainId, USDC_ON_ARBITRUM_ADDRESS, USDC_ABI, BROKER_HASH, TOKEN_HASH } from '../constants';
 import { useAccount, useChainId, useDisconnect, useSwitchChain, useWalletClient } from 'wagmi';
 import StyledConnectButton from './StyledConnectButton';
@@ -11,6 +11,7 @@ export const OrderlyDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitModal
     const [isProcessing, setIsProcessing] = useState(false);
     const [amount, setAmount] = useState('');
     const [error, setError] = useState<string | null>(null);
+    const amountRef = useRef<string>('');
     console.log("error", error);
     const { address } = useAccount();
     const chainId = useChainId();
@@ -29,10 +30,8 @@ export const OrderlyDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitModal
                 console.log("Received status object from Aarc:", statusObj);
 
                 if (statusObj && statusObj.destinationTokenAmount) {
-                    // Convert from wei to USD (assuming 6 decimals for USDC)
-                    const rawAmount = parseFloat(statusObj.destinationTokenAmount);
-                    const amountInUSD = rawAmount / 1000000;
-                    setAmount(amountInUSD.toString());
+                    setAmount(statusObj.destinationTokenAmount);
+                    amountRef.current = statusObj.destinationTokenAmount; // Also store in ref
                 } else {
                     console.log("No destinationTokenAmount in status object:", statusObj);
                 }
@@ -117,15 +116,21 @@ export const OrderlyDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitModal
     const depositToOrderly = async () => {
         if (!walletClient || !address) return;
 
-        if (!amount) {
+        // Use ref as fallback if state is empty due to re-renders
+        const currentAmount = amount || amountRef.current;
+        console.log("Depositing to Orderly with amount:", currentAmount);
+        console.log("Amount state at function start:", amount);
+        console.log("Amount ref at function start:", amountRef.current);
+
+        if (!currentAmount) {
             setError("Please enter an amount");
             return;
         }
 
         // Check minimum deposit amount
-        const amountNumber = parseFloat(amount);
+        const amountNumber = parseFloat(currentAmount);
         console.log("Validating amount in depositToOrderly:", amountNumber);
-        if (isNaN(amountNumber) || amountNumber < 10) {
+        if (isNaN(amountNumber) || amountNumber < 10000000) {
             setError("Minimum deposit amount is $10 USD or equivalent");
             return;
         }
@@ -160,7 +165,7 @@ export const OrderlyDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitModal
                 signer
             );
 
-            const amountInWei = ethers.parseUnits(amount, 6); // USDC has 6 decimals
+            const amountInWei = ethers.parseUnits(currentAmount, 6); // USDC has 6 decimals
 
             // Check allowance
             const allowance = await usdcContract.allowance(address, ORDERLY_CONTRACT_ADDRESS);
