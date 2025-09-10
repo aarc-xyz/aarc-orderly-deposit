@@ -118,9 +118,6 @@ export const OrderlyDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitModal
 
         // Use ref as fallback if state is empty due to re-renders
         const currentAmount = amount || amountRef.current;
-        console.log("Depositing to Orderly with amount:", currentAmount);
-        console.log("Amount state at function start:", amount);
-        console.log("Amount ref at function start:", amountRef.current);
 
         if (!currentAmount) {
             setError("Please enter an amount");
