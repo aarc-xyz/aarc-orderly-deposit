@@ -162,15 +162,14 @@ export const OrderlyDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitModal
                 signer
             );
 
-            const amountInWei = ethers.parseUnits(currentAmount, 6); // USDC has 6 decimals
 
             // Check allowance
             const allowance = await usdcContract.allowance(address, ORDERLY_CONTRACT_ADDRESS);
-            if (allowance < amountInWei) {
+            if (allowance < currentAmount) {
                 // Need to approve first
                 const approveTx = await usdcContract.approve(
                     ORDERLY_CONTRACT_ADDRESS,
-                    amountInWei
+                    currentAmount
                 );
                 await approveTx.wait();
             }
@@ -182,18 +181,15 @@ export const OrderlyDepositModal = ({ aarcModal }: { aarcModal: AarcFundKitModal
                 signer
             );
 
-
+            const amountInWei = ethers.parseUnits(currentAmount, 6); // USDC has 6 decimals
 
             // Call the Orderly deposit function
-            const tx = await orderlyContract.deposit(
-                address, // receiver address
-                {
-                    accountId: accountId,
-                    brokerHash: BROKER_HASH,
-                    tokenHash: TOKEN_HASH,
-                    tokenAmount: amountInWei
-                }
-            );
+            const tx = await orderlyContract.deposit({
+                accountId: accountId,
+                brokerHash: BROKER_HASH,
+                tokenHash: TOKEN_HASH,
+                tokenAmount: amountInWei
+            });
 
             // Wait for transaction to be mined
             await tx.wait();

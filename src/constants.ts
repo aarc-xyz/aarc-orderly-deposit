@@ -19,11 +19,6 @@ export const ORDERLY_ABI = [
     {
         "inputs": [
             {
-                "internalType": "address",
-                "name": "receiver",
-                "type": "address"
-            },
-            {
                 "components": [
                     {
                         "internalType": "bytes32",
